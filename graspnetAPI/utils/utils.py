@@ -469,10 +469,14 @@ def plot_gripper_pro_max(center, R, width, depth, score=1, color=None):
     - open3d.geometry.TriangleMesh
     '''
     x, y, z = center
-    height=0.004
-    finger_width = 0.004
+    height = 0.015
     tail_length = 0.04
-    depth_base = 0.02
+
+    depth_base = 0.038
+    finger_width = 0.003
+    # finger_width = 0.015
+    # finger_width = 0.008
+    # depth_base = 0.06
     
     if color is not None:
         color_r, color_g, color_b = color

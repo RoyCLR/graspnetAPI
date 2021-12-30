@@ -182,7 +182,7 @@ def get_grasp_score(grasp, obj, fc_list, force_closure_quality_config):
             break
     return quality
 
-def collision_detection(grasp_list, model_list, dexnet_models, poses, scene_points, outlier=0.05, empty_thresh=10, return_dexgrasps=False):
+def collision_detection(grasp_list, model_list, dexnet_models, poses, scene_points, outlier=0.05, collision_thresh=10, empty_thresh=10, finger_width=0.015, return_dexgrasps=False):
     '''
     **Input:**
     
@@ -210,9 +210,10 @@ def collision_detection(grasp_list, model_list, dexnet_models, poses, scene_poin
     
     - dexgrasp_list: [[ParallelJawPtGrasp3D,],] in object coordinate
     '''
-    height = 0.02
-    depth_base = 0.02
-    finger_width = 0.01
+    height = 0.015
+    depth_base = 0.038
+    # depth_base = 0.06
+    # finger_width = 0.015
     collision_mask_list = list()
     num_models = len(model_list)
     empty_mask_list = list()
@@ -262,7 +263,10 @@ def collision_detection(grasp_list, model_list, dexnet_models, poses, scene_poin
         right_mask = (mask1 & mask2 & mask5 & mask6)
         bottom_mask = (mask1 & mask3 & mask5 & mask7)
         inner_mask = (mask1 & mask2 &(~mask4) & (~mask6))
-        collision_mask = np.any((left_mask | right_mask | bottom_mask), axis=-1)
+        # collision_mask = np.any((left_mask | right_mask | bottom_mask), axis=-1)
+        # test1 = np.any((left_mask | right_mask | bottom_mask), axis=-1)
+        # test = np.sum(test1, axis=-1)
+        collision_mask = ((np.sum(left_mask, axis=-1) + np.sum(right_mask, axis=-1) + np.sum(bottom_mask, axis=-1)) > collision_thresh)
         empty_mask = (np.sum(inner_mask, axis=-1) < empty_thresh)
         collision_mask = (collision_mask | empty_mask)
         collision_mask_list.append(collision_mask)
